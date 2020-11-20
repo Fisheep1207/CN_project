@@ -5,7 +5,8 @@
 #include <map>
 #include <fstream>
 #include <sstream> 
-
+#include <stdlib.h>
+#include <time.h>
 namespace other{
     std::vector<std::string> split(std::string s, std::string delimiter) {
         size_t pos_start = 0, pos_end, delim_len = delimiter.length();
@@ -35,4 +36,17 @@ namespace other{
         vec_for_mes = split(vec_for_mes[0], "=");
         return vec_for_name[1]+ " " +vec_for_mes[1];
     }
+    std::string generateUUID(){
+        srand(time(NULL));
+        char *strUuid = new char[150];
+        sprintf(strUuid, "%x%x-%x-%x-%x-%x%x%x", 
+            rand(), rand(),                 // Generates a 64-bit Hex number
+            rand(),                         // Generates a 32-bit Hex number
+            ((rand() & 0x0fff) | 0x4000),   // Generates a 32-bit Hex number of the form 4xxx (4 indicates the UUID version)
+            rand() % 0x3fff + 0x8000,       // Generates a 32-bit Hex number in the range [0x8000, 0xbfff]
+            rand(), rand(), rand());        // Generates a 96-bit Hex number
+        delete [] strUuid;
+        std::string UUID_str(strUuid);
+        return UUID_str;
+    }   
 }

@@ -8,6 +8,7 @@ class HttpRequest {
 };
 
 void HttpRequest::parseRequest(std::string source){
+    raw_request = source;
     std::vector<std::string> tmp_req = other::split(source, "\r\n");
     std::vector<std::string> first_line_vec = other::split(tmp_req[0], " ");
     // std::cout << "WTF\n";
@@ -43,17 +44,20 @@ void HttpRequest::parseRequest(std::string source){
                 break;
             }
         }
-        std::vector<std::string> body = other::split(source, "\r\n\r\n");
-        int i_auto = std::stoi (header["Content-Length"], nullptr);
-        std::ofstream boardFile;
-        if(header["pathname"] == "/mes_board.html"){
-            boardFile.open ("board_content.txt", std::ios::app);
-            boardFile << "<li> " << body[1].substr(0, i_auto) << " </li>\n";
-            boardFile.close();
-        }
-        else if(header["pathname"] == "/login.html"){
-            
-        }
+        // if(header["pathname"] == "/mes_board.html"){
+        //     std::vector<std::string> body = other::split(source, "\r\n\r\n");
+        //     int i_auto = std::stoi (header["Content-Length"], nullptr);
+        //     std::ofstream boardFile;
+        //     boardFile.open("board_content.txt", std::ios::app);
+        //     boardFile << "<li> " << body[1].substr(0, i_auto) << " </li>\n";
+        //     boardFile.close();
+        // }
+        // else if(header["pathname"] == "/login.html"){
+        //     if(header.find("Cookie") == header.end()){
+        //         std::cout << "New-Cookie" << "\n";
+        //         other::generateUUID();
+        //     }
+        // }
     }
     else{
         badRequest = 1;

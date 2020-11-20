@@ -31,6 +31,8 @@ int main(int argc , char *argv[]){
     }
     std::vector<char> buffer(MAX_BUF_LENGTH);
     while(1){
+        // std::cout << "HI\n";
+        // std::cout << other::generateUUID() << "\n";
         std::cout << "\nWait for connection!\n";
         if ((new_socket_fd = accept(socket_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0){
             perror("In accept");            
@@ -50,6 +52,9 @@ int main(int argc , char *argv[]){
             close(new_socket_fd);
             continue;
         }
+        // for(auto iter = req.header.begin(); iter != req.header.end(); iter++){
+        //     std::cout<< iter->first << " " << iter->second <<"\n";
+        // }
         HttpResponse res(req);
         //std::cout << res.res << "\n";
         // std::cout << rcv_data << "\n";
