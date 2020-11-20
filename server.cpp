@@ -39,9 +39,9 @@ int main(int argc , char *argv[]){
         int valread = read(new_socket_fd, &buffer[0], MAX_BUF_LENGTH);
         rcv_data.append(buffer.cbegin(), buffer.cend());
         HttpRequest req;
-        std::cout << "fucksis\n";
+        // std::cout << "fucksis\n";
         req.parseRequest(rcv_data);
-        std::cout << "fuckbro\n";
+        // std::cout << "fuckbro\n";
         if (req.badRequest == 1){
             std::cout << "It's not a http request\n";
             buffer.clear();
