@@ -6,11 +6,14 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <arpa/inet.h>
-enum METHOD { GET, POST, DELETE, PUT};
+#include <fstream>
+#include <sstream> 
 
 int main(){
-    for(int i = GET; i != PUT; i++){
-        std::cout << i << "\n";
-    }    
+    std::ofstream boardFile;
+    boardFile.open ("board_content.txt", std::ios::app);
+    // boardFile << (header["nAmE"] + " " +header["mEsSaGe"]) << "\n";
+    boardFile << "abcc" << "\r\n";
+    boardFile.close();
     return 0;
 }

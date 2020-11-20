@@ -4,11 +4,12 @@
 #include <netinet/in.h>
 #include "request.hpp"
 #include "response.hpp"
-const int PORT = 8888;
+// const int PORT = 5000;
 const unsigned int MAX_BUF_LENGTH = 4096;
 
 int main(int argc , char *argv[]){
     int socket_fd, new_socket_fd;
+    int PORT = stoi(argv[1], nullptr);
     struct sockaddr_in address;
     memset((char*) &address, 0, sizeof(address));
     int addrlen = sizeof(address);
@@ -49,7 +50,7 @@ int main(int argc , char *argv[]){
             close(new_socket_fd);
             continue;
         }
-        HttpResponse res(req.header["pathname"]);
+        HttpResponse res(req);
         //std::cout << res.res << "\n";
         // std::cout << rcv_data << "\n";
         // for(auto iter = req.header.begin(); iter != req.header.end(); iter++){

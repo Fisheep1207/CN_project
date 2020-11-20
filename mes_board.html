@@ -95,27 +95,31 @@
         }
     </style>
 </head>
-<body>
-<form action="/mes_board.html" method="post" class="smart-green">
-    <h1>留言資訊
-        <span>請留下你的資訊.</span>
-    </h1>
-    <label>
-        <span>姓名 :</span>
-        <input id="name" type="text" name="nAmE" class="error" placeholder="請輸入您的姓名"/>
-        <div class="error-msg"></div>
-    </label>
-    <label>
-        <span>留言 :</span>
-        <textarea id="message" name="mEsSaGe"  placeholder="請輸入你的建議"></textarea>
-        <div class="error-msg"></div>
-    </label>
-    <div class="success-msg"></div>
-    <label>
-        <span>&nbsp;</span>
-        <input type="submit" class="button" value="提交"/>
-    </label>
-    <!-- <input type='hidden' name='csrfmiddlewaretoken' value='SfHkbL4feo1G00sJQtbO7TtLN4c2BUwa' /> -->
-</form>
-</body>
+    <body>
+        <form action="/mes_board.html" method="post" class="smart-green">
+            <h1>留言資訊
+                <span>請留下你的資訊.</span>
+            </h1>
+            <label>
+                <span>姓名 :</span>
+                <input id="name" type="text" name="nAmE" required="required" class="error" placeholder="請輸入您的姓名"/>
+                <div class="error-msg"></div>
+            </label>
+            <label>
+                <span>留言 :</span>
+                <textarea id="message" name="mEsSaGe" required="required" placeholder="請輸入你的建議"></textarea>
+                <div class="error-msg"></div>
+            </label>
+            <div class="success-msg"></div>
+            <label>
+                <span>&nbsp;</span>
+                <input type="submit" class="button" value="提交"/>
+            </label>
+            <ul>
+                <!--currentMsg-->
+                <!--endMsg-->
+            </ul>
+        </form>
+    </body>
+    
 </html>

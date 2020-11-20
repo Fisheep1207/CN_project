@@ -30,32 +30,30 @@ void HttpRequest::parseRequest(std::string source){
     }
     else if(first_line_vec[0] == "POST"){
         // std::cout << "WTF1\n";
-        tmp_req.clear();
-        tmp_req = other::split(source, "\r\n\r\n");
         header["method"] = first_line_vec[0];
-        // std::cout << "WTF2\n";
         header["pathname"] = first_line_vec[1];
-        // std::cout << "WTF3\n";
         header["httpVersion"] = first_line_vec[2];
-        std::vector<std::string> key_value = other::split(tmp_req[1], "=");
-        // std::string name = assign(key_value[1].find("&", 0);  // 切割乾淨！！！
-        if(key_value[1] != "" && key_value[key_value.size()-1] != ""){
-            header["nAmE"] = key_value[1];
-            header["mEsSaGe"] = key_value[key_value.size()-1];
+        for(auto iter=tmp_req.cbegin()+1; iter != tmp_req.cend(); iter++){
+            // std::cout << "*iter = " << *iter << "\n";
+            std::vector<std::string> key_value = other::split(*iter, ":");
+            if(key_value.size() >= 2){
+                header[key_value[0]] = key_value[1];
+            }
+            else{
+                break;
+            }
         }
-        else if(key_value[1] == "" && key_value[key_value.size()-1] != ""){
-            header["nAmE"] = "Anonymous";
-            header["mEsSaGe"] = key_value[key_value.size()-1];
-        }
-        else if(key_value[1] != "" && key_value[key_value.size()-1] == ""){
-            header["nAmE"] = key_value[1];
-            header["mEsSaGe"] = "";
-        }
-        else return;
+        std::vector<std::string> body = other::split(source, "\r\n\r\n");
+        int i_auto = std::stoi (header["Content-Length"], nullptr);
         std::ofstream boardFile;
-        boardFile.open ("board_content.txt", std::ios::app);
-        boardFile << (header["nAmE"] + " " +header["mEsSaGe"]) << "\n";
-        boardFile.close();
+        if(header["pathname"] == "/mes_board.html"){
+            boardFile.open ("board_content.txt", std::ios::app);
+            boardFile << "<li> " << body[1].substr(0, i_auto) << " </li>\n";
+            boardFile.close();
+        }
+        else if(header["pathname"] == "/login.html"){
+            
+        }
     }
     else{
         badRequest = 1;
