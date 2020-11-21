@@ -9,84 +9,8 @@ class HttpResponse {
         void createRes(HttpRequest req){
             std::string pathname = req.header["pathname"];
             std::cout << "pathname = " << pathname << "\n";
-            if(pathname == "/"){
-                std::string html = other::myReadFile("menu.html");
-                std::stringstream tmp;
-                tmp << "HTTP/1.1 200 OK\r\n" 
-                    << "Content-Type: text/html\r\n"
-                    << "Connection: close\r\n"
-                    << "Content-Length: " << html.size() << "\r\n"
-                    << "\r\n"
-                    << html;
-                res = tmp.str();
-                std::cout << tmp.str() << "\n";
-            }
-            else if (pathname == "/favicon.ico"){
-                std::string image = other::myReadFile("patrick.png");
-                std::stringstream tmp;
-                tmp << "HTTP/1.1 200 OK\r\n" 
-                    << "Content-Type: image/png\r\n"
-                    << "Connection: close\r\n"
-                    << "Content-Length: " << image.size() << "\r\n"
-                    << "\r\n"
-                    << image;
-                res = tmp.str();
-            }
-            else if (pathname == "/patrick.png"){
-                std::string image = other::myReadFile("patrick.png");
-                std::stringstream tmp;
-                tmp << "HTTP/1.1 200 OK\r\n" 
-                    << "Content-Type: image/png\r\n"
-                    << "Connection: close\r\n"
-                    << "Content-Length: " << image.size() << "\r\n"
-                    << "\r\n"
-                    << image;
-                res = tmp.str();
-            }
-            else if (pathname == "/spongeBob.png"){
-                std::string image = other::myReadFile("patrick.png");
-                std::stringstream tmp;
-                tmp << "HTTP/1.1 200 OK\r\n" 
-                    << "Content-Type: image/png\r\n"
-                    << "Connection: close\r\n"
-                    << "Content-Length: " << image.size() << "\r\n"
-                    << "\r\n"
-                    << image;
-                res = tmp.str();
-            }
-            else if(pathname == "/mes_board.html"){
-                std::string html = other::myReadFile("mes_board.html");
-                std::string data = other::myReadFile("board_content.txt");
-                std::vector<std::string> data_vec = other::split(data, "\n");
-                // for(int i = 0 ; i < data_vec.size(); i++){
-                //     std::cout << "data_vec = " << data_vec[i] << "\n";
-                // }
-                if(req.header["method"] == "POST"){
-                    std::vector<std::string> body = other::split(req.raw_request, "\r\n\r\n");
-                    int i_auto = std::stoi(req.header["Content-Length"], nullptr);
-                    std::ofstream boardFile;
-                    boardFile.open("board_content.txt", std::ios::app);
-                    boardFile << "<li> " << body[1].substr(0, i_auto) << " </li>\n";
-                    boardFile.close();
-                    data_vec.push_back("<li> " + body[1].substr(0, i_auto) + " </li>\n");
-                }
-                std::string data_final;
-                for(int i = 0; i < data_vec.size(); i++){
-                    data_final += "<li> " + other::parseBoardData(data_vec[i])+"</li><br>\n";
-                }
-                html.replace(html.find("<!--endMsg-->"), 13, data_final);
-                std::stringstream tmp;
-                tmp << "HTTP/1.1 200 OK\r\n" 
-                    << "Content-Type: text/html\r\n"
-                    << "Connection: close\r\n"
-                    << "Content-Length: " << html.size() << "\r\n"
-                    << "\r\n"
-                    << html;
-                res = tmp.str();
-                // std::cout << tmp.str() << "\n";
-            }
-            else if (pathname == "/register.html"){
-                std::string html = other::myReadFile("register.html");
+            if (pathname == "/register.html"){
+                std::string html = other::myReadFile("./staticFile/register.html");
                 std::stringstream tmp;
                 tmp << "HTTP/1.1 200 OK\r\n" 
                     << "Content-Type: text/html\r\n"
@@ -101,7 +25,7 @@ class HttpResponse {
                     std::cout << "Entry GET\n";
                     if(req.header.find("Cookie") == req.header.end()){  // 如果沒有 cookie
                         std::cout << "Entry GET Without Cookie\n";
-                        std::string html = other::myReadFile("login.html");
+                        std::string html = other::myReadFile("./staticFile/login.html");
                         std::stringstream tmp;
                         tmp << "HTTP/1.1 200 OK\r\n" 
                             << "Content-Type: text/html\r\n"
@@ -119,37 +43,24 @@ class HttpResponse {
                         // std::cout << "fuck fuck fuck   " + cur_cookie_file << "\n";
                         std::ifstream f(cur_cookie_file.c_str());
                         if(f.good()){   // 如果有 cookie 的檔案
-                            std::string html = other::myReadFile("menu.html");
+                            // std::string html = other::myReadFile("menu.html");
                             std::stringstream tmp;
-                            tmp << "HTTP/1.1 200 OK\r\n" 
+                            tmp << "HTTP/1.1 303 See Other\r\n" 
                                 << "Content-Type: text/html\r\n"
-                                << "Connection: close\r\n"
-                                << "Content-Length: " << html.size() << "\r\n"
+                                << "Location: /\r\n"
+                                // << "Content-Length: " << html.size() << "\r\n"
                                 << "Set-Cookie: login="+cur_cookie+"\r\n" 
-                                << "\r\n"
-                                << html;
+                                << "\r\n";
+                                // << html;
                             res = tmp.str();
                         }
-                        else{   // 如果沒有 cookie 的檔案
-                            std::cout << "Entry GET Without Cookie File\n";
-                            std::string new_cookie = other::generateUUID();
-                            std::ofstream userFile;
-                            std::vector<std::string> body = other::split(req.raw_request, "\r\n\r\n");
-                            int i_auto = std::stoi(req.header["Content-Length"], nullptr);
-                            body[1] = body[1].substr(0, i_auto);
-                            std::vector<std::string> tmp_body = other::split(body[1], "&");
-                            userFile.open("./cookie/"+new_cookie+".txt");
-                            std::string username = tmp_body[0].substr(tmp_body[0].find("="));
-                            std::string password = tmp_body[1].substr(tmp_body[1].find("="));
-                            userFile << username << "\n";
-                            userFile << password << "\n";
-                            userFile.close();
-                            std::string html = other::myReadFile("menu.html");
+                        else{
+                            std::cout << "Entry GET With wrong Cookie\n";
+                            std::string html = other::myReadFile("./staticFile/login.html");
                             std::stringstream tmp;
                             tmp << "HTTP/1.1 200 OK\r\n" 
                                 << "Content-Type: text/html\r\n"
                                 << "Connection: close\r\n"
-                                << "Set-Cookie: login="+new_cookie+"\r\n"
                                 << "Content-Length: " << html.size() << "\r\n"
                                 << "\r\n"
                                 << html;
@@ -159,30 +70,77 @@ class HttpResponse {
                 }
                 else if (req.header["method"] =="POST"){
                     std::cout << "Entry POST\n";
-                    if(req.header.find("Cookie") == req.header.end()){
-                        std::cout << "Entry POST without Cookie\n";
+                    std::map<std::string, std::string> user = other::getUsernameAndPassword(req);
+                    std::cout << "eee" << user["action"] << "\n";
+                    if(user["action"] == "join"){   // redirect 才對
                         std::string new_cookie = other::generateUUID();
                         std::ofstream userFile;
-                        std::vector<std::string> body = other::split(req.raw_request, "\r\n\r\n");
-                        int i_auto = std::stoi(req.header["Content-Length"], nullptr);
-                        body[1] = body[1].substr(0, i_auto);
-                        std::vector<std::string> tmp_body = other::split(body[1], "&");
+                        std::ofstream passwordFile;
                         userFile.open("./cookie/"+new_cookie+".txt");
-                        std::string username = tmp_body[0].substr(tmp_body[0].find("="));
-                        std::string password = tmp_body[1].substr(tmp_body[1].find("="));
-                        userFile << username << "\n";
-                        userFile << password << "\n";
+                        passwordFile.open("./password/"+user["username"]+".txt");
+                        passwordFile << user["password"] << "\n";
+                        userFile << user["username"] << "\n";
+                        userFile << user["password"] << "\n";
                         userFile.close();
-                        std::string html = other::myReadFile("menu.html");
                         std::stringstream tmp;
-                        tmp << "HTTP/1.1 200 OK\r\n" 
+                        tmp << "HTTP/1.1 303 See Other\r\n" 
                             << "Content-Type: text/html\r\n"
-                            << "Connection: close\r\n"
-                            << "Set-Cookie: login="+new_cookie+"\r\n"
-                            << "Content-Length: " << html.size() << "\r\n"
-                            << "\r\n"
-                            << html;
+                            << "Location: /\r\n"
+                            // << "Content-Length: " << html.size() << "\r\n"
+                            << "Set-Cookie: login="+new_cookie+"\r\n" 
+                            << "\r\n";
+                            // << html;
                         res = tmp.str();
+                    }
+                    else if (user["action"] == "login"){
+                        std::cout << "login\n";
+                        if(req.header.find("Cookie") == req.header.end()){
+                            std::cout << "Entry POST without Cookie (login)\n";
+                            std::string user_pass_file = "./password/"+user["username"]+".txt";
+                            std::ifstream f(user_pass_file.c_str());
+                            if(f.good()){   // 如果有 user 的檔案 // redirect 才對
+                                std::string password;
+                                std::getline(f, password);
+                                if(password == user["password"]){
+                                    std::string new_cookie = other::generateUUID();
+                                    std::ofstream userFile;
+                                    userFile.open("./cookie/"+new_cookie+".txt");
+                                    userFile << user["username"] << "\n";
+                                    userFile << user["password"] << "\n";
+                                    std::stringstream tmp;
+                                    tmp << "HTTP/1.1 303 See Other\r\n" 
+                                        << "Content-Type: text/html\r\n"
+                                        << "Location: /\r\n"
+                                        // << "Content-Length: " << html.size() << "\r\n"
+                                        << "Set-Cookie: login="+new_cookie+"\r\n" 
+                                        << "\r\n";
+                                        // << html;
+                                    res = tmp.str();
+                                }
+                                else{ // 要增加「密碼錯誤」那行
+                                    std::string html = other::myReadFile("./staticFile/login.html");
+                                    std::stringstream tmp;
+                                    tmp << "HTTP/1.1 200 OK\r\n" 
+                                        << "Content-Type: text/html\r\n"
+                                        << "Connection: close\r\n"
+                                        << "Content-Length: " << html.size() << "\r\n"
+                                        << "\r\n"
+                                        << html;
+                                    res = tmp.str();
+                                }
+                            }
+                            else{ // 帳號密碼錯誤 
+                                std::string html = other::myReadFile("./staticFile/login.html");
+                                std::stringstream tmp;
+                                tmp << "HTTP/1.1 200 OK\r\n" 
+                                    << "Content-Type: text/html\r\n"
+                                    << "Connection: close\r\n"
+                                    << "Content-Length: " << html.size() << "\r\n"
+                                    << "\r\n"
+                                    << html;
+                                res = tmp.str();
+                            }
+                        }
                     }
                     // else{  // 這個只有在想要改密碼的時候會用到
                     //     std::string cur_cookie = req.header.find("Cookie");
@@ -208,8 +166,140 @@ class HttpResponse {
                     // }
                 }
             }
+            else if (pathname == "/favicon.ico"){
+                std::string image = other::myReadFile("./staticFile/patrick.png");
+                std::stringstream tmp;
+                tmp << "HTTP/1.1 200 OK\r\n" 
+                    << "Content-Type: image/png\r\n"
+                    << "Connection: close\r\n"
+                    << "Content-Length: " << image.size() << "\r\n"
+                    << "\r\n"
+                    << image;
+                res = tmp.str();
+            }
+            else if (pathname == "/patrick.png"){
+                std::string image = other::myReadFile("./staticFile/patrick.png");
+                std::stringstream tmp;
+                tmp << "HTTP/1.1 200 OK\r\n" 
+                    << "Content-Type: image/png\r\n"
+                    << "Connection: close\r\n"
+                    << "Content-Length: " << image.size() << "\r\n"
+                    << "\r\n"
+                    << image;
+                res = tmp.str();
+            }
+            else if (pathname == "/spongeBob.png"){
+                std::string image = other::myReadFile("./staticFile/spongeBob.png");
+                std::stringstream tmp;
+                tmp << "HTTP/1.1 200 OK\r\n" 
+                    << "Content-Type: image/png\r\n"
+                    << "Connection: close\r\n"
+                    << "Content-Length: " << image.size() << "\r\n"
+                    << "\r\n"
+                    << image;
+                res = tmp.str();
+            }
+            else if(req.header.find("Cookie") == req.header.end()){
+                std::stringstream tmp;
+                tmp << "HTTP/1.1 303 See Other\r\n" 
+                    << "Content-Type: text/html\r\n"
+                    << "Location: /login.html\r\n"
+                    // << "Content-Length: " << html.size() << "\r\n"
+                    << "\r\n";
+                    // << html;
+                res = tmp.str();
+            }
+            else if(pathname == "/"){
+                std::string html = other::myReadFile("./staticFile/menu.html");
+                std::string cur_cookie = req.header["Cookie"];
+                cur_cookie = cur_cookie.substr(7);
+                std::string cur_cookie_file = "./cookie/"+ cur_cookie +".txt";
+                // std::cout << "fuck fuck fuck   " + cur_cookie_file << "\n";
+                std::ifstream f(cur_cookie_file.c_str());
+                if(f.good()){   // 如果有 cookie 的檔案
+                    std::string username;
+                    std::getline(f, username);
+                    std::stringstream tmp;
+                    html.replace(html.find(" Login "), 7, username);
+                    html.replace(html.find("<!--Logout"), 10, " ");
+                    html.replace(html.find("Logout-->"), 9, " ");
+                    tmp << "HTTP/1.1 200 OK\r\n" 
+                        << "Content-Type: text/html\r\n"
+                        << "Connection: close\r\n"
+                        << "Content-Length: " << html.size() << "\r\n"
+                        << "\r\n"
+                        << html;
+                        // << html;
+                    res = tmp.str();
+                }
+                else{    
+                    std::stringstream tmp;
+                    tmp << "HTTP/1.1 303 See Other\r\n" 
+                        << "Content-Type: text/html\r\n"
+                        << "Location: /login.html\r\n"
+                        << "\r\n";
+                    res = tmp.str();
+                }
+                //std::cout << tmp.str() << "\n";
+            }
+            else if(pathname == "/mes_board.html"){
+                std::string cur_cookie = req.header["Cookie"];
+                cur_cookie = cur_cookie.substr(7);
+                std::string cur_cookie_file = "./cookie/"+ cur_cookie +".txt";
+                std::ifstream f(cur_cookie_file.c_str());
+                if(f.good()){   // 如果有 cookie 的檔案
+                    std::string username;
+                    std::getline(f, username);
+                    std::string html = other::myReadFile("./staticFile/mes_board.html");
+                    std::string data = other::myReadFile("./msgBoard/board_content.txt");
+                    std::vector<std::string> data_vec = other::split(data, "\n");
+                    if(req.header["method"] == "POST"){
+                        std::vector<std::string> body = other::split(req.raw_request, "\r\n\r\n");
+                        int i_auto = std::stoi(req.header["Content-Length"], nullptr);
+                        std::ofstream boardFile;
+                        boardFile.open("./msgBoard/board_content.txt", std::ios::app);
+                        boardFile << "<li> " << body[1].substr(0, i_auto) << " </li>\n";
+                        boardFile.close();
+                        data_vec.push_back("<li> " + body[1].substr(0, i_auto) + " </li>\n");
+                    }
+                    std::string data_final;
+                    for(int i = 0; i < data_vec.size(); i++){
+                        data_final += "<li> " + other::parseBoardData(data_vec[i])+"</li><br>\n";
+                    }
+                    html.replace(html.find("<!--endMsg-->"), 13, data_final);
+                    html.replace(html.find(" Login "), 7, username);
+                    html.replace(html.find("<!--Logout"), 10, " ");
+                    html.replace(html.find("Logout-->"), 9, " ");
+                    std::stringstream tmp;
+                    tmp << "HTTP/1.1 200 OK\r\n" 
+                        << "Content-Type: text/html\r\n"
+                        << "Connection: close\r\n"
+                        << "Content-Length: " << html.size() << "\r\n"
+                        << "\r\n"
+                        << html;
+                    res = tmp.str();
+                }
+                else{
+                    std::stringstream tmp;
+                    tmp << "HTTP/1.1 303 See Other\r\n" 
+                        << "Content-Type: text/html\r\n"
+                        << "Location: /login.html\r\n"
+                        << "\r\n";
+                    res = tmp.str();
+                }
+                // std::cout << tmp.str() << "\n";
+            }
+            else if(pathname == "/logout"){
+                std::stringstream tmp;
+                tmp << "HTTP/1.1 303 See Other\r\n" 
+                    << "Content-Type: text/html\r\n"
+                    << "Location: /login.html\r\n"
+                    << "Set-Cookie: login=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+                    << "\r\n";
+                res = tmp.str();
+            }
             else{
-                std::string html = other::myReadFile("404.html");
+                std::string html = other::myReadFile("./staticFile/404.html");
                 std::stringstream tmp;
                 tmp << "HTTP/1.1 404 Not Found\r\n" 
                     << "Content-Type: text/html\r\n"

@@ -8,3 +8,5 @@
 <li> nAmE=sdf&mEsSaGe=sdfff </li>
 <li> nAmE=sdf&mEsSaGe=sdfff </li>
 <li> nAmE=b07902041&mEsSaGe=Fuckabro </li>
+<li> nAmE=Fisheep&mEsSaGe=Fuckbro </li>
+<li> nAmE=123&mEsSaGe=Fisheep%0D%0A </li>

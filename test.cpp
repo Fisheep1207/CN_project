@@ -24,13 +24,14 @@
 //     return UUID_str;
 // }
 int main(){
-    std::ifstream f("404.html");
-    std::cout << f.good() << "\n";
+    // std::ifstream f("404.html");
+    // std::cout << f.good() << "\n";
     // generateUUID();
-    // std::ofstream boardFile;
-    // boardFile.open ("board_content.txt", std::ios::app);
-    // // boardFile << (header["nAmE"] + " " +header["mEsSaGe"]) << "\n";
-    // boardFile << "abcc" << "\r\n";
-    // boardFile.close();
+
+    std::ofstream file;
+    file.open("board_content.txt", std::ios::app);
+    // boardFile << (header["nAmE"] + " " +header["mEsSaGe"]) << "\n";
+    file << "abcc" << "\r\n";
+    file.close();
     return 0;
 }

@@ -10,13 +10,14 @@
 
             <!-- Icon -->
             <div class="fadeIn first">
-            <img src="patrick.png" id="icon" alt="User Icon" />
+                <img src="patrick.png" id="icon" alt="User Icon" />
             </div>
-
+            
             <!-- Login Form -->
             <form method="post" action="login.html">
                 <input type="text" id="login" required="required" class="fadeIn second" name="username" placeholder="login">
                 <input type="text" id="password"  required="required" class="fadeIn third" name="password" placeholder="password">
+                <input name="action" type="hidden" id="action" value="login">
                 <input type="submit" class="fadeIn fourth" value="Log In">
             </form>
             <div id="formFooter">

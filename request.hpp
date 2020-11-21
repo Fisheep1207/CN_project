@@ -1,11 +1,4 @@
 #include "other_function.hpp"
-class HttpRequest {
-    public:
-        std::string raw_request;
-        std::map<std::string, std::string> header;
-        int badRequest = 0;
-        void parseRequest(std::string source);
-};
 
 void HttpRequest::parseRequest(std::string source){
     raw_request = source;

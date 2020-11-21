@@ -7,6 +7,13 @@
 #include <sstream> 
 #include <stdlib.h>
 #include <time.h>
+class HttpRequest {
+    public:
+        std::string raw_request;
+        std::map<std::string, std::string> header;
+        int badRequest = 0;
+        void parseRequest(std::string source);
+};
 namespace other{
     std::vector<std::string> split(std::string s, std::string delimiter) {
         size_t pos_start = 0, pos_end, delim_len = delimiter.length();
@@ -35,6 +42,25 @@ namespace other{
         std::vector<std::string> vec_for_mes = split(tmp[1], " ");
         vec_for_mes = split(vec_for_mes[0], "=");
         return vec_for_name[1]+ " " +vec_for_mes[1];
+    }
+    std::map<std::string, std::string> getUsernameAndPassword(HttpRequest req){
+        std::vector<std::string> body = other::split(req.raw_request, "\r\n\r\n");
+        int i_auto = std::stoi(req.header["Content-Length"], nullptr);
+        body[1] = body[1].substr(0, i_auto);
+        std::vector<std::string> tmp_body = other::split(body[1], "&");
+        std::string username = tmp_body[0].substr(tmp_body[0].find("=")+1);
+        std::string password = tmp_body[1].substr(tmp_body[1].find("=")+1);
+        std::string action = tmp_body[2].substr(tmp_body[2].find("=")+1);
+        std::map<std::string, std::string> ans;
+        ans["username"] = username;
+        ans["password"] = password;
+        ans["action"] = action;
+        std::cout << "username = " << ans["username"] << "\n"; 
+        std::cout << "password = " << ans["password"] << "\n";
+        std::cout << "action = " << ans["action"] << "\n";
+        // if (ans["password"] == "881207") std::cout << "pass fuckbro\n";
+        // if (ans["action"] == "login\n") std::cout << "fuckbro\n";
+        return ans;
     }
     std::string generateUUID(){
         srand(time(NULL));
