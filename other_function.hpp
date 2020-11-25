@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -71,8 +72,8 @@ namespace other{
             ((rand() & 0x0fff) | 0x4000),   // Generates a 32-bit Hex number of the form 4xxx (4 indicates the UUID version)
             rand() % 0x3fff + 0x8000,       // Generates a 32-bit Hex number in the range [0x8000, 0xbfff]
             rand(), rand(), rand());        // Generates a 96-bit Hex number
+        std::string UUID_str(strUuid); 
         delete [] strUuid;
-        std::string UUID_str(strUuid);
-        return UUID_str;
+	return UUID_str;
     }   
 }

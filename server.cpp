@@ -9,7 +9,7 @@ const unsigned int MAX_BUF_LENGTH = 4096;
 
 int main(int argc , char *argv[]){
     int socket_fd, new_socket_fd;
-    int PORT = stoi(argv[1], nullptr);
+    int PORT = std::stoi(argv[1], nullptr);
     struct sockaddr_in address;
     memset((char*) &address, 0, sizeof(address));
     int addrlen = sizeof(address);
@@ -38,36 +38,41 @@ int main(int argc , char *argv[]){
             perror("In accept");            
             exit(EXIT_FAILURE);        
         }
-        std::string rcv_data;
-        int valread = read(new_socket_fd, &buffer[0], MAX_BUF_LENGTH);
-        rcv_data.append(buffer.cbegin(), buffer.cend());
-        HttpRequest req;
-        // std::cout << "fucksis\n";
-        req.parseRequest(rcv_data);
-        // std::cout << "fuckbro\n";
-        if (req.badRequest == 1){
-            std::cout << "It's not a http request\n";
+        int pid = fork();
+        if (pid == -1){
+            perror("fork error");            
+            exit(EXIT_FAILURE);
+        }
+        else if (pid == 0){
+            close(socket_fd);
+            std::string rcv_data;
+            int valread = read(new_socket_fd, &buffer[0], MAX_BUF_LENGTH);
+            rcv_data.append(buffer.cbegin(), buffer.cend());
+            HttpRequest req;
+            // std::cout << "fucksis\n";
+            req.parseRequest(rcv_data);
+            // std::cout << "fuckbro\n";
+            if (req.badRequest == 1){
+                std::cout << "It's not a http request\n";
+                buffer.clear();
+                buffer.resize(MAX_BUF_LENGTH);
+                close(new_socket_fd);
+                continue;
+            }
+            HttpResponse res(req);
+            int byte = write(new_socket_fd, res.res.c_str(), res.res.size());
+            close(new_socket_fd);
             buffer.clear();
             buffer.resize(MAX_BUF_LENGTH);
-            close(new_socket_fd);
-            continue;
+            exit(0);
         }
-        // for(auto iter = req.header.begin(); iter != req.header.end(); iter++){
-        //     std::cout<< iter->first << " " << iter->second <<"\n";
-        // }
-        HttpResponse res(req);
-        //std::cout << res.res << "\n";
-        // std::cout << rcv_data << "\n";
-        // for(auto iter = req.header.begin(); iter != req.header.end(); iter++){
-        //     std::cout<< iter->first << " " << iter->second <<"\n";
-        // }
-        // char *hello = "Hello from server";
-        int byte = write(new_socket_fd, res.res.c_str(), res.res.size());
-        // std::cout << "byte = " << byte << "\n";
-        // std::cout << "\nserver send hello to client\n";
-        close(new_socket_fd);
-        buffer.clear();
-        buffer.resize(MAX_BUF_LENGTH);
+        else{
+            close(new_socket_fd);
+            if(fork() > 0){
+                std::cout << "father die\n";
+                exit(0);
+            }
+        }
     }
     return 0;
 }

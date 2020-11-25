@@ -1,7 +1,8 @@
 #include "other_function.hpp"
 
 void HttpRequest::parseRequest(std::string source){
-    raw_request = source;
+	std::cout << "source = " << source << "\n";
+	raw_request = source;
     std::vector<std::string> tmp_req = other::split(source, "\r\n");
     std::vector<std::string> first_line_vec = other::split(tmp_req[0], " ");
     // std::cout << "WTF\n";
