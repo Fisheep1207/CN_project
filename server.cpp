@@ -6,7 +6,7 @@
 #include "response.hpp"
 // const int PORT = 5000;
 const unsigned int MAX_BUF_LENGTH = 4096;
-
+std::vector<int> ccpid;
 int main(int argc , char *argv[]){
     int socket_fd, new_socket_fd;
     int PORT = std::stoi(argv[1], nullptr);
@@ -64,13 +64,20 @@ int main(int argc , char *argv[]){
             close(new_socket_fd);
             buffer.clear();
             buffer.resize(MAX_BUF_LENGTH);
+            std::cout << "end response" << "\n";
             exit(0);
         }
         else{
+            ccpid.push_back(pid);
             close(new_socket_fd);
-            if(fork() > 0){
-                std::cout << "father die\n";
-                exit(0);
+            while(!ccpid.empty()){
+                int status;
+                for(int i = 0 ; i < ccpid.size(); i++){
+                    int tmp = waitpid(ccpid[i],&status,WNOHANG);
+                    if(tmp == ccpid[i]){
+                        ccpid.erase(ccpid.begin()+i);
+                    }
+                }
             }
         }
     }

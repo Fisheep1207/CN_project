@@ -138,6 +138,7 @@ class HttpResponse {
                                 }
                             }
                             else{ // 帳號密碼錯誤 
+                                std::cout << ("<!--Wrong Username or Password-->");
                                 std::string html = other::myReadFile("./staticFile/login.html");
                                 std::stringstream tmp;
                                 std::string wrong = "<!--Wrong Username or Password-->";
@@ -153,28 +154,6 @@ class HttpResponse {
                             }
                         // }
                     }
-                    // else{  // 這個只有在想要改密碼的時候會用到
-                    //     std::string cur_cookie = req.header.find("Cookie");
-                    //     std::cout << "cur_cookie =" << cur_cookie << "\n";
-                    //     std::string data = other::myReadFile("./cookie/"+cur_cookie+".txt");
-                    //     std::vector<std::string> try_user = other::split(data, "\n");
-                    //     std::vector<std::string> body = other::split(req.raw_request, "\r\n\r\n");
-                    //     int i_auto = std::stoi(req.header["Content-Length"], nullptr);
-                    //     body[1] = body[1].substr(0, i_auto);
-                    //     std::vector<std::string> tmp = other::split(body[1], "&");
-                    //     userFile.open("./cookie/"+new_cookie+".txt");
-                    //     std::string username = tmp[0].substr(tmp[0].find("="));
-                    //     std::string password = tmp[1].substr(tmp[1].find("="));
-                    //     if(try_user[0] == username && try_user[1] == password){
-                    //         tmp << "HTTP/1.1 200 OK\r\n" 
-                    //             << "Content-Type: text/html\r\n"
-                    //             << "Connection: close\r\n"
-                    //             << "Content-Length: " << html.size() << "\r\n"
-                    //             << "\r\n"
-                    //             << html;
-                    //         res = tmp.str();
-                    //     }
-                    // }
                 }
             }
             else if (pathname == "/favicon.ico"){
@@ -329,6 +308,158 @@ class HttpResponse {
                     res = tmp.str();
                 }
                 // std::cout << tmp.str() << "\n";
+            }
+            else if (pathname == "/video1.html"){
+                std::string html = other::myReadFile("./staticFile/video1.html");
+                std::string cur_cookie = req.header["Cookie"];
+                cur_cookie = cur_cookie.substr(7);
+                std::string cur_cookie_file = "./cookie/"+ cur_cookie +".txt";
+                // std::cout << "fuck fuck fuck   " + cur_cookie_file << "\n";
+                std::ifstream f(cur_cookie_file.c_str());
+                if(f.good()){   // 如果有 cookie 的檔案
+                    std::string username;
+                    std::getline(f, username);
+                    std::stringstream tmp;
+                    html.replace(html.find(" Login "), 7, username);
+                    html.replace(html.find("<!--Logout"), 10, " ");
+                    html.replace(html.find("Logout-->"), 9, " ");
+                    tmp << "HTTP/1.1 200 OK\r\n" 
+                        << "Content-Type: text/html\r\n"
+                        << "Connection: close\r\n"
+                        << "Content-Length: " << html.size() << "\r\n"
+                        << "\r\n"
+                        << html;
+                        // << html;
+                    res = tmp.str();
+                }
+                else{    
+                    std::stringstream tmp;
+                    tmp << "HTTP/1.1 303 See Other\r\n" 
+                        << "Content-Type: text/html\r\n"
+                        << "Location: /login.html\r\n"
+                        << "\r\n";
+                    res = tmp.str();
+                }
+                //std::cout << tmp.str() << "\n";
+            }
+            else if (pathname == "/video2.html"){
+                std::string html = other::myReadFile("./staticFile/video2.html");
+                std::string cur_cookie = req.header["Cookie"];
+                cur_cookie = cur_cookie.substr(7);
+                std::string cur_cookie_file = "./cookie/"+ cur_cookie +".txt";
+                // std::cout << "fuck fuck fuck   " + cur_cookie_file << "\n";
+                std::ifstream f(cur_cookie_file.c_str());
+                if(f.good()){   // 如果有 cookie 的檔案
+                    std::string username;
+                    std::getline(f, username);
+                    std::stringstream tmp;
+                    html.replace(html.find(" Login "), 7, username);
+                    html.replace(html.find("<!--Logout"), 10, " ");
+                    html.replace(html.find("Logout-->"), 9, " ");
+                    tmp << "HTTP/1.1 200 OK\r\n" 
+                        << "Content-Type: text/html\r\n"
+                        << "Connection: close\r\n"
+                        << "Content-Length: " << html.size() << "\r\n"
+                        << "\r\n"
+                        << html;
+                        // << html;
+                    res = tmp.str();
+                }
+                else{    
+                    std::stringstream tmp;
+                    tmp << "HTTP/1.1 303 See Other\r\n" 
+                        << "Content-Type: text/html\r\n"
+                        << "Location: /login.html\r\n"
+                        << "\r\n";
+                    res = tmp.str();
+                }
+                //std::cout << tmp.str() << "\n";
+            }
+            else if(pathname == "/1.mp4"){
+                long long fileSize = other::readFileSize("./video/1.mp4");
+                std::string range = req.header["Range"];
+                if(range != ""){
+                    std::cout << "range = " << range << "\n";
+                    range = range.replace(range.find("bytes="), 6, "");
+                    std::vector<std::string> range_vec = other::split(range, "-");
+                    long long int start = std::stoi(range_vec[0], nullptr);
+                    std::cout << "here12345!!!\n";
+                    long long int end = range_vec[1]!=""? std::stoi(range_vec[1], nullptr): fileSize-1;
+                    std::cout << "here444!!!\n";
+                    long long int chunksize = (end-start)+1;
+                    if (chunksize >= 150000){
+                        chunksize = 150000;
+                        end = chunksize-1+start;
+                    }
+                    std::cout << "start = " << start << " " << "end = " << end <<"\n";
+                    std::string data = other::myReadFileWithSize("./video/1.mp4",start, chunksize);
+                    std::stringstream tmp;
+                    std::cout << "here123!!!\n";
+                    tmp << "HTTP/1.1 206 Partial Content\r\n"
+                        << "Content-Type: video/mp4\r\n" \
+                        << "Accept-Ranges: bytes\r\n" \
+                        << "Connection: keep-alive\r\n" \
+                        << "Content-Length: "<<  std::to_string(chunksize) <<  "\r\n" \
+                        << "Content-Range: " << "bytes "+std::to_string(start)<<"-"+std::to_string(end)<<"/"+std::to_string(fileSize)<<"\r\n" \
+                        << "\r\n" 
+                        << data;
+                    std::cout << "here!!!\n";
+                    res = tmp.str();
+                }
+                else{
+                    std::string data = other::myReadFile("./video/1.mp4");
+                    std::stringstream tmp;
+                    tmp << "HTTP/1.1 200 OK\r\n"
+                        << "Content-Type: video/mp4\r\n" \
+                        << "Connection: keep-alive\r\n" \
+                        << "Content-Length: "<< std::to_string(fileSize) << "\r\n" \
+                        << "\r\n"
+                        << data;
+                    res = tmp.str();
+                }
+            }
+            else if(pathname == "/2.mp4"){
+                long long fileSize = other::readFileSize("./video/2.mp4");
+                std::string range = req.header["Range"];
+                if(range != ""){
+                    std::cout << "range = " << range << "\n";
+                    range = range.replace(range.find("bytes="), 6, "");
+                    std::vector<std::string> range_vec = other::split(range, "-");
+                    long long int start = std::stoi(range_vec[0], nullptr);
+                    std::cout << "here12345!!!\n";
+                    long long int end = range_vec[1]!=""? std::stoi(range_vec[1], nullptr): fileSize-1;
+                    std::cout << "here444!!!\n";
+                    long long int chunksize = (end-start)+1;
+                    if (chunksize >= 150000){
+                        chunksize = 150000;
+                        end = chunksize-1+start;
+                    }
+                    std::cout << "start = " << start << " " << "end = " << end <<"\n";
+                    std::string data = other::myReadFileWithSize("./video/2.mp4",start, chunksize);
+                    std::stringstream tmp;
+                    std::cout << "here123!!!\n";
+                    tmp << "HTTP/1.1 206 Partial Content\r\n"
+                        << "Content-Type: video/mp4\r\n" \
+                        << "Accept-Ranges: bytes\r\n" \
+                        << "Connection: keep-alive\r\n" \
+                        << "Content-Length: "<<  std::to_string(chunksize) <<  "\r\n" \
+                        << "Content-Range: " << "bytes "+std::to_string(start)<<"-"+std::to_string(end)<<"/"+std::to_string(fileSize)<<"\r\n" \
+                        << "\r\n" 
+                        << data;
+                    std::cout << "here!!!\n";
+                    res = tmp.str();
+                }
+                else{
+                    std::string data = other::myReadFile("./video/2.mp4");
+                    std::stringstream tmp;
+                    tmp << "HTTP/1.1 200 OK\r\n"
+                        << "Content-Type: video/mp4\r\n" \
+                        << "Connection: keep-alive\r\n" \
+                        << "Content-Length: "<< std::to_string(fileSize) << "\r\n" \
+                        << "\r\n"
+                        << data;
+                    res = tmp.str();
+                }
             }
             else if(pathname == "/logout"){
                 std::stringstream tmp;

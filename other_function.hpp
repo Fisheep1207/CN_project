@@ -16,6 +16,13 @@ class HttpRequest {
         void parseRequest(std::string source);
 };
 namespace other{
+    long long int readFileSize(std::string filename){
+        std::ifstream fin(filename, std::ifstream::in | std::ifstream::binary);
+        fin.seekg(0, std::ios::end);
+        long long length = fin.tellg();
+        fin.close();
+        return length;
+    }
     std::vector<std::string> split(std::string s, std::string delimiter) {
         size_t pos_start = 0, pos_end, delim_len = delimiter.length();
         std::string token;
@@ -29,11 +36,30 @@ namespace other{
         return tmp;
     }
     std::string myReadFile(std::string s){
+        std::cout << "Normal!\n";
         std::ifstream input_file(s, std::ios::in);
         if( !input_file ){
             std::cerr << "File could not be opened\n";
         }
         std::string content((std::istreambuf_iterator<char>(input_file)), (std::istreambuf_iterator<char>()));
+        // std::cout << content;
+        return content;
+    }
+    std::string myReadFileWithSize(std::string s, long long start, long long chunkSize){
+        std::cout << "WithSize!\n";
+        std::ifstream input_file(s, std::ios::in);
+        std::cout << "beforeerrr\n"; 
+        if( !input_file ){
+             std::cout << "error bro\n"; 
+            std::cerr << "File could not be opened\n";
+        }
+        input_file.seekg(start, std::ios::beg);
+        std::string content(" ", chunkSize);
+        std::cout << "before\n"; 
+        input_file.read(&content[0], chunkSize);
+        std::cout << "after\n"; 
+        input_file.close();
+        // std::string content((std::istreambuf_iterator<char>(input_file)), (std::istreambuf_iterator<char>()));
         // std::cout << content;
         return content;
     }
