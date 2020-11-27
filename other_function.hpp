@@ -15,6 +15,7 @@ class HttpRequest {
         int badRequest = 0;
         void parseRequest(std::string source);
 };
+std::vector<char> buffer(300000+500);
 namespace other{
     long long int readFileSize(std::string filename){
         std::ifstream fin(filename, std::ifstream::in | std::ifstream::binary);
@@ -46,22 +47,18 @@ namespace other{
         return content;
     }
     std::string myReadFileWithSize(std::string s, long long start, long long chunkSize){
-        std::cout << "WithSize!\n";
-        std::ifstream input_file(s, std::ios::in);
-        std::cout << "beforeerrr\n"; 
-        if( !input_file ){
-             std::cout << "error bro\n"; 
-            std::cerr << "File could not be opened\n";
-        }
-        input_file.seekg(start, std::ios::beg);
-        std::string content(" ", chunkSize);
-        std::cout << "before\n"; 
-        input_file.read(&content[0], chunkSize);
+        int f_read = open(s.c_str(), O_RDONLY);
+        lseek(f_read, start, SEEK_SET);
+        std::cout << "start = " << start << "\n";
+        int n = read(f_read, &buffer[0], chunkSize);
+        std::string rcv_data;
+        rcv_data.append(buffer.cbegin(), buffer.cend());
+        std::cout << "n = " << n << "\n";
         std::cout << "after\n"; 
-        input_file.close();
-        // std::string content((std::istreambuf_iterator<char>(input_file)), (std::istreambuf_iterator<char>()));
-        // std::cout << content;
-        return content;
+        close(f_read);
+        buffer.clear();
+        buffer.resize(300000+500);
+        return rcv_data;
     }
     std::string parseBoardData(std::string s){
         std::vector<std::string> tmp = split(s, "&");

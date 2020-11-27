@@ -2,10 +2,13 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "request.hpp"
 #include "response.hpp"
 // const int PORT = 5000;
-const unsigned int MAX_BUF_LENGTH = 4096;
+const unsigned int MAX_BUF_LENGTH = 10000;
 std::vector<int> ccpid;
 int main(int argc , char *argv[]){
     int socket_fd, new_socket_fd;
