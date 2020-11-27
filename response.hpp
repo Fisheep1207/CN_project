@@ -383,16 +383,16 @@ class HttpResponse {
                     range = range.replace(range.find("bytes="), 6, "");
                     std::vector<std::string> range_vec = other::split(range, "-");
                     long long int start = std::stoi(range_vec[0], nullptr);
-                    std::cout << "here12345!!!\n";
-                    std::cout << "vec0 = "<< range_vec[0]<< " vec2 = "<< range_vec[1]<< " boolean = "<< (range_vec[1] == "") << "\n";
+                    std::cout << "here12345!!!\n";        
+	    	    //std::cout << "vec0 = "<< range_vec[0]<< " vec2 = "<< range_vec[1]<< " boolean = "<< (range_vec[1] == "") << "\n";
                     long long int end = fileSize;
                     if(range_vec.size() >= 2){
                         end = range_vec[1]!=""? std::stoi(range_vec[1], nullptr): fileSize-1;
                     }
                     std::cout << "here444!!!\n";
                     long long int chunksize = (end-start)+1;
-                    if (chunksize >= 300000){
-                        chunksize = 300000;
+                    if (chunksize >= 200000){
+                        chunksize = 200000;
                         end = chunksize-1+start;
                     }
                     std::cout << "start = " << start << " " << "end = " << end <<"\n";
@@ -415,12 +415,12 @@ class HttpResponse {
                 else{
                     // std::string data = other::myReadFile("./video/1.mp4");
                     // std::stringstream tmp;
-                    std::string data = other::myReadFileWithSize("./video/1.mp4", 0, 300000);
+                    std::string data = other::myReadFileWithSize("./video/1.mp4", 0, 200000);
                     std::stringstream tmp;
                     tmp << "HTTP/1.1 200 OK\r\n"
                         << "Content-Type: video/mp4\r\n" \
                         << "Connection: keep-alive\r\n" \
-                        << "Content-Length: "<< 300000 << "\r\n" \
+                        << "Content-Length: "<< 200000 << "\r\n" \
                         << "\r\n"
                         << data;
                     res = tmp.str();
