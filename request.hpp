@@ -2,6 +2,7 @@
 
 void HttpRequest::parseRequest(std::string source){
 	std::cout << "source = " << source << "\n";
+    fflush(stdout);
 	raw_request = source;
     std::vector<std::string> tmp_req = other::split(source, "\r\n");
     std::vector<std::string> first_line_vec = other::split(tmp_req[0], " ");

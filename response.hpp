@@ -279,10 +279,10 @@ class HttpResponse {
                         }
                     }
                     std::string data_final;
-                    for(int i = 0 ; i < data_vec.size(); i ++){
-                        std::cout << "here in loop\n";
-                        std::cout << data_vec[i] << "\n";	
-                    }
+                    // for(int i = 0 ; i < data_vec.size(); i ++){
+                    //     std::cout << "here in loop\n";
+                    //     std::cout << data_vec[i] << "\n";	
+                    // }
                     for(int i = 0; i < data_vec.size(); i++){
                         data_final += "<li> " + other::parseBoardData(data_vec[i])+"</li><br>\n";
                     }
@@ -379,28 +379,27 @@ class HttpResponse {
                 long long fileSize = other::readFileSize("./video/1.mp4");
                 std::string range = req.header["Range"];
                 if(range != ""){
-                    std::cout << "range = " << range << "\n";
+                    // std::cout << "range = " << range << "\n";
                     range = range.replace(range.find("bytes="), 6, "");
                     std::vector<std::string> range_vec = other::split(range, "-");
                     long long int start = std::stoi(range_vec[0], nullptr);
-                    std::cout << "here12345!!!\n";        
+                    // std::cout << "here12345!!!\n";        
 	    	    //std::cout << "vec0 = "<< range_vec[0]<< " vec2 = "<< range_vec[1]<< " boolean = "<< (range_vec[1] == "") << "\n";
                     long long int end = fileSize;
                     if(range_vec.size() >= 2){
                         end = range_vec[1]!=""? std::stoi(range_vec[1], nullptr): fileSize-1;
                     }
-                    std::cout << "here444!!!\n";
+                    // std::cout << "here444!!!\n";
                     long long int chunksize = (end-start)+1;
                     if (chunksize >= 200000){
                         chunksize = 200000;
                         end = chunksize-1+start;
                     }
-                    std::cout << "start = " << start << " " << "end = " << end <<"\n";
                     std::string data = other::myReadFileWithSize("./video/1.mp4",start, chunksize);
                     if(start+chunksize >= fileSize) end = fileSize-1;
                     // std::cout << "fuck bro" << data << "\n";
                     std::stringstream tmp;
-                    std::cout << "here123!!!\n";
+                    // std::cout << "here123!!!\n";
                     tmp << "HTTP/1.1 206 Partial Content\r\n"
                         << "Content-Type: video/mp4\r\n" \
                         << "Accept-Ranges: bytes\r\n" \
@@ -460,7 +459,7 @@ class HttpResponse {
                         << "Content-Range: " << "bytes "+std::to_string(start)<<"-"+std::to_string(end)<<"/"+std::to_string(fileSize)<<"\r\n" \
                         << "\r\n" 
                         << data;
-                    std::cout << "here!!!\n";
+                    // std::cout << "here!!!\n";
                     res = tmp.str();
                 }
                 else{
