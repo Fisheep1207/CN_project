@@ -189,6 +189,28 @@ class HttpResponse {
                     << image;
                 res = tmp.str();
             }
+            else if (pathname == "/profile1.jpg"){
+                std::string image = other::myReadFile("./staticFile/profile1.jpg");
+                std::stringstream tmp;
+                tmp << "HTTP/1.1 200 OK\r\n" 
+                    << "Content-Type: image/jpg\r\n"
+                    << "Connection: close\r\n"
+                    << "Content-Length: " << image.size() << "\r\n"
+                    << "\r\n"
+                    << image;
+                res = tmp.str();
+            }
+            else if (pathname == "/profile2.jpg"){
+                std::string image = other::myReadFile("./staticFile/profile2.jpg");
+                std::stringstream tmp;
+                tmp << "HTTP/1.1 200 OK\r\n" 
+                    << "Content-Type: image/jpg\r\n"
+                    << "Connection: close\r\n"
+                    << "Content-Length: " << image.size() << "\r\n"
+                    << "\r\n"
+                    << image;
+                res = tmp.str();
+            }
             else if(pathname == "/chromePLS.html"){
                 std::string html = other::myReadFile("./staticFile/chromePLS.html");
                 std::stringstream tmp;
