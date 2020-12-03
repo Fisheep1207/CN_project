@@ -19,7 +19,8 @@ void HttpRequest::parseRequest(std::string source){
             // std::cout << "*iter = " << *iter << "\n";
             std::vector<std::string> key_value = other::split(*iter, ":");
             if(key_value.size() >= 2){
-                header[key_value[0]] = key_value[1];
+                key_value[0][0] = toupper(key_value[0][0]);
+		 header[key_value[0]] = key_value[1];
             }
         }
         // std::cout << "WTF5\n";

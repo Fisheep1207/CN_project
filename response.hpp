@@ -237,8 +237,8 @@ class HttpResponse {
                 std::string cur_cookie = req.header["Cookie"];
                 cur_cookie = cur_cookie.substr(7);
                 std::string cur_cookie_file = "./cookie/"+ cur_cookie +".txt";
-                // std::cout << "fuck fuck fuck   " + cur_cookie_file << "\n";
-                std::ifstream f(cur_cookie_file.c_str());
+                //std::cout << "fuck fuck fuck = " << cur_cookie_file << "\n";
+		std::ifstream f(cur_cookie_file.c_str());
                 if(f.good()){   // 如果有 cookie 的檔案
                     std::string username;
                     std::getline(f, username);
