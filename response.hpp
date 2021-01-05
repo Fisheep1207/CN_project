@@ -542,11 +542,12 @@ class HttpResponse {
                 res = tmp.str();
             }
             else if(pathname == "/logout"){
-                std::stringstream tmp;
+		    std::cout << "logout\n";
+		    std::stringstream tmp;
                 tmp << "HTTP/1.1 303 See Other\r\n" 
                     << "Content-Type: text/html\r\n"
                     << "Location: /login.html\r\n"
-                    << "Set-Cookie: login=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+                    << "Set-Cookie: login=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT\r\n"
                     << "\r\n";
                 res = tmp.str();
             }
